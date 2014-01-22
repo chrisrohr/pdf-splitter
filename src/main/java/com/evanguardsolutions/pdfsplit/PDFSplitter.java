@@ -19,7 +19,7 @@ public class PDFSplitter {
 		try {
 			// Checks the program arguments to make sure the original file has been provided
 			if (args.length == 0) {
-				System.out.println("Err: Missing original file");
+				System.out.println("Err: NONE Missing original file");
 				System.exit(1);
 			}
 			
@@ -28,16 +28,20 @@ public class PDFSplitter {
 			InputStream input = null;
 			PDDocument document = null;
 			BufferedReader br = null;
+			int totalPages = 0;
 			
 			try {
 				// This try block tries to read the original file and parse the PDF document
 				try {
 					input = new FileInputStream(originalFile);
 					document = parseDocument(input);
+					totalPages = document.getNumberOfPages();
 				} catch (Exception e) {
-					System.out.println("Err: Unable to read file [" + originalFile + "]");
+					System.out.println("Err: NONE Unable to read file [" + originalFile + "]");
 					System.exit(1);
 				}
+				
+				System.out.println("Ready:");
 				
 				// Setting up to read from standard in
 				br = new BufferedReader(new InputStreamReader(System.in));
@@ -53,6 +57,12 @@ public class PDFSplitter {
 					int startPage = Integer.parseInt(inputSplit[0]);
 					int endPage = Integer.parseInt(inputSplit[1]);
 					String outFile = inputSplit[2];
+					
+					if (startPage > totalPages || endPage > totalPages) {
+						// Outside page range, sending error and continue
+						System.out.println("Err: " + outFile + " Start page [" + startPage + "] or End page [" + endPage + "] out of range.  Total [" + totalPages + "]");
+						continue;
+					}
 					
 					// Because this library expects to split a file evenly, we are tricking it by setting the start page, end page, and setting the split = the end page (making one output)
 					splitter.setStartPage(startPage);
@@ -70,7 +80,7 @@ public class PDFSplitter {
 							System.out.println("Ok: " + outFile);
 						}
 					} catch (Exception e) {
-						System.out.println("Err: " + e.getMessage());
+						System.out.println("Err: " + outFile + " " + e.getMessage());
 					}
 				}
 			} finally {
