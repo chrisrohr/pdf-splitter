@@ -58,10 +58,14 @@ public class PDFSplitter {
 					int endPage = Integer.parseInt(inputSplit[1]);
 					String outFile = inputSplit[2];
 					
-					if (startPage > totalPages || endPage > totalPages) {
+					if (startPage > totalPages) {
 						// Outside page range, sending error and continue
 						System.out.println("Err: " + outFile + " Start page [" + startPage + "] or End page [" + endPage + "] out of range.  Total [" + totalPages + "]");
 						continue;
+					}
+					
+					if (endPage > totalPages) {
+						endPage = totalPages;
 					}
 					
 					// Because this library expects to split a file evenly, we are tricking it by setting the start page, end page, and setting the split = the end page (making one output)
